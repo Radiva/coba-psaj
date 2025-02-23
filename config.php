@@ -2,7 +2,7 @@
 $host = "localhost";
 $dbname = "web-ujian";
 $username = "root";
-$password = "";
+$password = "k";
 $site_url = "http://web-ujian.test/";
 
 try {
