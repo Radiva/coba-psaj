@@ -13,6 +13,7 @@ if (!isset($_GET['peserta_detail_id'])) {
 
 $jadwal_id = $_GET['jadwal_id'];
 $ruang_id  = $_GET['ruang_id'];
+$guru_id = $_SESSION['guru_id'];
 $peserta_detail_id = $_GET['peserta_detail_id'];
 
 // Ambil data siswa lengkap (nomor ujian, nama, kelas)
@@ -56,8 +57,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmtUpdate->execute([$nilai, $existing]);
         } else {
             // Insert nilai
-            $stmtInsert = $conn->prepare("INSERT INTO ujian_penilaian (peserta_detail_id, rubrik_id, nilai) VALUES (?, ?, ?)");
-            $stmtInsert->execute([$peserta_detail_id, $rubrik_id, $nilai]);
+            $stmtInsert = $conn->prepare("INSERT INTO ujian_penilaian (peserta_detail_id, pengawas_id, rubrik_id, nilai) VALUES (?, ?, ?, ?)");
+            $stmtInsert->execute([$peserta_detail_id, $guru_id, $rubrik_id, $nilai]);
         }
     }
     header("Location: guru_nilai.php?peserta_detail_id=".$peserta_detail_id."&jadwal_id=".$jadwal_id."&ruang_id=".$ruang_id."&status=success");

@@ -13,6 +13,7 @@ if (!isset($_GET['jadwal_id']) || !isset($_GET['ruang_id'])) {
 
 $jadwal_id = $_GET['jadwal_id'];
 $ruang_id  = $_GET['ruang_id'];
+$guru_id = $_SESSION['guru_id'];
 
 // Ambil detail jadwal (tema, tanggal, status) beserta informasi sesi dan ruangan
 $stmt = $conn->prepare("
@@ -37,27 +38,48 @@ $scheduleStatus = $scheduleDetails['status']; // "Aktif" atau "Nonaktif"
 // Ambil daftar peserta dengan data nilai (jika sudah dinilai)
 // Asumsi: Tabel ujian_penilaian menyimpan nilai peserta dengan kolom nilai_total,
 // dan dihubungkan dengan ujian_peserta_detail melalui peserta_detail_id.
+// $stmt = $conn->prepare("
+//     SELECT 
+//         p.id AS peserta_id, 
+//         p.nomor, 
+//         s.nama_lengkap, 
+//         pd.id AS peserta_detail_id,
+//         pd.nomor_urut,
+//         COALESCE(MAX(up.id), 0) AS status_penilaian_id,
+//         CASE 
+//             WHEN MAX(up.id) IS NOT NULL THEN 'Sudah Dinilai' 
+//             ELSE 'Belum Dinilai' 
+//         END AS status_penilaian
+//     FROM ujian_peserta_detail pd
+//     JOIN ujian_peserta p ON pd.peserta_id = p.id
+//     JOIN siswa s ON p.siswa_id = s.id
+//     LEFT JOIN ujian_penilaian up ON pd.id = up.peserta_detail_id
+//     WHERE pd.jadwal_id = ? AND pd.ruang_id = ? AND up.pengawas_id = ?
+//     GROUP BY p.id, p.nomor, s.nama_lengkap, pd.id, pd.nomor_urut
+//     ORDER BY pd.nomor_urut ASC;
+// ");
 $stmt = $conn->prepare("
     SELECT 
-        p.id AS peserta_id, 
-        p.nomor, 
-        s.nama_lengkap, 
+        p.id AS peserta_id,
+        p.nomor,
+        s.nama_lengkap,
         pd.id AS peserta_detail_id,
         pd.nomor_urut,
-        COALESCE(MAX(up.id), 0) AS status_penilaian_id,
         CASE 
-            WHEN MAX(up.id) IS NOT NULL THEN 'Sudah Dinilai' 
+            WHEN COUNT(up.id) > 0 THEN 'Sudah Dinilai' 
             ELSE 'Belum Dinilai' 
         END AS status_penilaian
     FROM ujian_peserta_detail pd
     JOIN ujian_peserta p ON pd.peserta_id = p.id
     JOIN siswa s ON p.siswa_id = s.id
-    LEFT JOIN ujian_penilaian up ON pd.id = up.peserta_detail_id
+    LEFT JOIN ujian_penilaian up 
+        ON pd.id = up.peserta_detail_id AND up.pengawas_id = ?
     WHERE pd.jadwal_id = ? AND pd.ruang_id = ?
-    GROUP BY p.id, p.nomor, s.nama_lengkap, pd.id, pd.nomor_urut
-    ORDER BY pd.nomor_urut ASC;
+    GROUP BY pd.id, p.id, p.nomor, s.nama_lengkap, pd.nomor_urut
+    ORDER BY pd.nomor_urut ASC
 ");
-$stmt->execute([$jadwal_id, $ruang_id]);
+
+$stmt->execute([$guru_id, $jadwal_id, $ruang_id]);
 $pesertaList = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
