@@ -89,7 +89,7 @@ $username = $_SESSION['username'];
             </span>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="logout.php">Logout</a>
+            <a class="nav-link" href="<?php echo $site_url ?>logout.php">Logout</a>
           </li>
         </ul>
       </div>
