@@ -48,8 +48,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             continue;
         }
         // Cek apakah nilai untuk rubrik ini sudah ada
-        $stmt = $conn->prepare("SELECT id FROM ujian_penilaian WHERE peserta_detail_id = ? AND rubrik_id = ?");
-        $stmt->execute([$peserta_detail_id, $rubrik_id]);
+        $stmt = $conn->prepare("SELECT id FROM ujian_penilaian WHERE peserta_detail_id = ? AND rubrik_id = ? AND pengawas_id = ?");
+        $stmt->execute([$peserta_detail_id, $rubrik_id, $guru_id]);
         $existing = $stmt->fetchColumn();
         if ($existing) {
             // Update nilai
@@ -67,8 +67,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Ambil nilai yang sudah ada (jika ada) untuk rubrik-rubrik ini
 $existingScores = [];
-$stmt = $conn->prepare("SELECT rubrik_id, nilai FROM ujian_penilaian WHERE peserta_detail_id = ?");
-$stmt->execute([$peserta_detail_id]);
+$stmt = $conn->prepare("SELECT rubrik_id, nilai FROM ujian_penilaian WHERE peserta_detail_id = ? AND pengawas_id = ?");
+$stmt->execute([$peserta_detail_id, $guru_id]);
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $existingScores[$row['rubrik_id']] = $row['nilai'];
 }

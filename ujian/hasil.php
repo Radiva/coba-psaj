@@ -10,16 +10,17 @@ $query = "
     SELECT 
         uj.id AS jadwal_id,
         uj.tanggal,
-        uj.sesi,
+        us.nama AS sesi,
         uj.nama_tema,
         COUNT(DISTINCT upd.id) AS total_peserta,
         COUNT(DISTINCT CASE WHEN up.id IS NOT NULL THEN upd.id END) AS peserta_dinilai,
         (COUNT(DISTINCT upd.id) - COUNT(DISTINCT CASE WHEN up.id IS NOT NULL THEN upd.id END)) AS peserta_belum_dinilai
     FROM ujian_jadwal uj
+    LEFT JOIN ujian_sesi us ON uj.sesi_id = us.id
     LEFT JOIN ujian_peserta_detail upd ON uj.id = upd.jadwal_id
     LEFT JOIN ujian_penilaian up ON upd.id = up.peserta_detail_id
-    GROUP BY uj.id, uj.tanggal, uj.sesi, uj.nama_tema
-    ORDER BY uj.tanggal DESC, uj.sesi ASC
+    GROUP BY uj.id, uj.tanggal, us.nama, uj.nama_tema
+    ORDER BY uj.tanggal DESC, us.nama ASC
 ";
 
 $stmt = $conn->prepare($query);
