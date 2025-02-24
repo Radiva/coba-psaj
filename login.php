@@ -22,6 +22,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION['username'] = $user['username'];
         $_SESSION['role'] = $user['role'];
         $_SESSION['guru_id'] = $user['id_profil'];
+        if($user['role'] == "guru") {
+            $stmt = $conn->prepare("SELECT nama_lengkap FROM guru WHERE id = ?");
+            $stmt->execute([$user['id_profil']]);
+            $nama_lengkap = $stmt->fetch();
+            $_SESSION['nama_lengkap'] = $nama_lengkap['nama_lengkap'];
+        }
 
         // Redirect ke dashboard
         header("Location: dashboard.php");

@@ -6,7 +6,7 @@ if (!isset($_SESSION['role'])) {
     exit();
 }
 $role = $_SESSION['role'];
-$username = $_SESSION['username'];
+$nama_lengkap = ($role == "guru") ? $_SESSION['nama_lengkap'] : "Admin";
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -64,32 +64,28 @@ $username = $_SESSION['username'];
                 <li><a class="dropdown-item" href="<?php echo $site_url ?>ujian/jadwal.php">Jadwal</a></li>
                 <li><a class="dropdown-item" href="<?php echo $site_url ?>ujian/peserta_jadwal.php">Jadwal Peserta</a></li>
                 <li><a class="dropdown-item" href="<?php echo $site_url ?>ujian/rubrik.php">Rubrik</a></li>
-                <li><a class="dropdown-item" href="<?php echo $site_url ?>ujian/hasil.php">Hasil</a></li>
               </ul>
             </li>
             <!-- Menu Tambahan untuk Admin -->
             <li class="nav-item">
-              <a class="nav-link" href="#">Laporan</a>
+              <a class="nav-link" href="<?php echo $site_url ?>ujian/hasil.php">Laporan</a>
             </li>
           <?php else: ?>
             <!-- Menu Ujian untuk Guru dan Siswa -->
             <li class="nav-item">
               <a class="nav-link" href="<?php echo $site_url ?>ujian/guru_ujian.php">Ujian</a>
             </li>
-            <!-- Menu Profil untuk Guru dan Siswa -->
-            <li class="nav-item">
-              <a class="nav-link" href="#">Profil</a>
-            </li>
           <?php endif; ?>
         </ul>
         <ul class="navbar-nav">
-          <li class="nav-item">
-            <span class="navbar-text">
-              Halo, <?= htmlspecialchars($username); ?> (<?= $role; ?>)
-            </span>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="<?php echo $site_url ?>logout.php">Logout</a>
+          <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Halo, <?= htmlspecialchars($nama_lengkap) ?> (<?= $role; ?>)
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="userDropdown">
+                <li><a class="dropdown-item" href="<?php echo $site_url ?>profil.php">Profil</a></li>
+                <li><a class="dropdown-item" href="<?php echo $site_url ?>logout.php">Logout</a></li>
+              </ul>
           </li>
         </ul>
       </div>
